@@ -1,0 +1,29 @@
+BASE PÚBLICA ICE-MZ 2022–2025 — DICIONÁRIO DE DADOS
+
+Finalidade
+Base analítica para consulta e reutilização pública. Não contém NUIT, nome do
+importador, nome do exportador ou qualquer outro identificador empresarial.
+
+Granularidade
+- indice: índice por fluxo, ano, cenário e, quando aplicável, Secção SH.
+- balanca: exportações, importações e saldo por mês, em mil USD.
+- parceiro: valor comercial agregado por fluxo, ano e país, em mil USD.
+- provincia: valor comercial agregado por fluxo, ano e província, em mil USD.
+
+Campos
+tipo_registo: indice, balanca, parceiro ou provincia.
+fluxo: EXP, IMP ou GBL.
+ano: ano civil.
+periodo: mês (1–12), quando aplicável.
+cenario: raw, 400, 300, 200 ou 100.
+seccao_sh: Secção do Sistema Harmonizado (1–21), quando aplicável.
+continente, pais, latitude, longitude: localização agregada do parceiro.
+provincia: província de Moçambique, quando disponível na fonte.
+indice: resultado do índice, base 2022 = 100.
+cobertura: percentagem do valor comercial representado.
+exportacoes_mil_usd, importacoes_mil_usd, saldo_mil_usd: balança comercial.
+valor_mil_usd: valor comercial agregado.
+
+Protecção
+Os ficheiros-fonte e a base integral permanecem na área de gestão, sujeitos a
+autenticação, perfis de acesso, registo de auditoria e políticas de segurança.
