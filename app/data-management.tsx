@@ -1,0 +1,15 @@
+"use client";
+import {useState} from "react";
+
+export default function DataManagement(){
+ const[upload,setUpload]=useState(false),[file,setFile]=useState<File|null>(null),[stage,setStage]=useState(0);
+ const close=()=>{setUpload(false);setStage(0);setFile(null)};
+ return <>
+  <div className="management-grid">
+   <article className="management-card protected"><span>BASE INTEGRAL · ACESSO PROTEGIDO</span><h3>Registos completos e ficheiros-fonte</h3><p>NUIT e nomes dos importadores/exportadores permanecem apenas nesta camada. O acesso é concedido por perfil e todas as operações ficam registadas.</p><button className="login">Entrar para consultar ↗</button></article>
+   <article className="management-card public-data"><span>BASE PÚBLICA · SEM IDENTIFICADORES</span><h3>Dados analíticos para reutilização</h3><p>Download em CSV sem NUIT, nome do importador ou nome do exportador, acompanhado por dicionário de dados.</p><div><a href="/downloads/Base_Publica_ICE_MZ_2022_2025.csv" download>Descarregar CSV ↓</a><a href="/downloads/Dicionario_Base_Publica_ICE_MZ.txt" download>Dicionário ↓</a></div></article>
+  </div>
+  <section className="upload-section management-upload"><div><span>GESTÃO AUTOMÁTICA DE DADOS</span><h2>Carregar dados de 2026 em diante</h2><p>Disponível apenas para Administrador e Gestor de dados. A janela verifica estrutura, unidades, códigos SH8, datas, duplicações e cobertura antes do cálculo.</p></div><button onClick={()=>setUpload(true)}>＋ Carregar novo ficheiro</button><ol><li><b>1</b>Carregar Excel ou CSV</li><li><b>2</b>Validar e normalizar</li><li><b>3</b>Calcular índices</li><li><b>4</b>Aprovar e publicar</li></ol></section>
+  {upload&&<div className="modal-backdrop" role="dialog" aria-modal="true" aria-label="Carregar novo ficheiro"><div className="upload-modal"><button className="modal-close" onClick={close}>×</button><span>NOVO CONJUNTO DE DADOS · ÁREA PROTEGIDA</span><h3>Carregamento automático</h3><div className="upload-steps"><i className={stage>=0?"active":""}>1</i><i className={stage>=1?"active":""}>2</i><i className={stage>=2?"active":""}>3</i></div>{stage===0&&<><label className="dropzone"><input type="file" accept=".xlsx,.csv" onChange={e=>setFile(e.target.files?.[0]||null)}/><b>{file?file.name:"Seleccione ou arraste um ficheiro"}</b><small>Excel (.xlsx) ou CSV · até 500 MB</small></label><div className="template-fields">Campos mínimos: REGIME, year, month, SH8, SumOfquantity, unit e SumOfMilUSD.</div><button disabled={!file} onClick={()=>setStage(1)}>Validar ficheiro →</button></>}{stage===1&&<><div className="validation-list"><p>✓ Estrutura do ficheiro reconhecida</p><p>✓ Regras SH8 e unidades preparadas</p><p>✓ Identificadores reservados à camada protegida</p><p>○ Persistência será activada após criar o projecto Supabase</p></div><button onClick={()=>setStage(2)}>Preparar cálculo →</button></>}{stage===2&&<><div className="ready-state"><b>Ficheiro preparado</b><p>A integração guardará a fonte privada, calculará a nova versão e enviará os resultados ao Validador antes da publicação.</p></div><button onClick={close}>Concluir</button></>}</div></div>}
+ </>;
+}
