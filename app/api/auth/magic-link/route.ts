@@ -9,11 +9,10 @@ export async function POST(request:Request){
   const input=await request.json();
   const email=String(input.email||"").trim().toLowerCase();
   if(!allowed.has(email))return NextResponse.json({message:"Este e-mail não está autorizado para a área reservada."},{status:403});
-  const origin=new URL(request.url).origin;
   const authRes=await fetch(`${supabaseUrl}/auth/v1/otp`,{
    method:"POST",
    headers:{apikey:publishableKey,"Content-Type":"application/json"},
-   body:JSON.stringify({email,create_user:true,data:{full_name:email==="sergiom.ndimande@gmail.com"?"Sergio M. Ndimande":"Gitondimas"},redirect_to:`${origin}/auth/callback`}),
+   body:JSON.stringify({email,create_user:true,data:{full_name:email==="sergiom.ndimande@gmail.com"?"Sergio M. Ndimande":"Gitondimas"},redirect_to:"https://ice-mz.vercel.app"}),
    cache:"no-store"
   });
   const result=await authRes.json().catch(()=>({}));
