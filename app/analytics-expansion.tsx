@@ -1,0 +1,23 @@
+"use client";
+import {useMemo,useState} from "react";
+import dataset from "../data/scenarios.json";
+
+const scenarios=["raw","400","300","200","100"];
+const names:Record<string,string>={raw:"Dados brutos",400:"Limite 400",300:"Limite 300",200:"Limite 200",100:"Limite 100"};
+const colors:Record<string,string>={raw:"#8a3d38",400:"#7656a5",300:"#0d5b42",200:"#d5a431",100:"#60736b"};
+const fmt=(n:number|null,d=2)=>n==null?"—":n.toLocaleString("pt-PT",{minimumFractionDigits:d,maximumFractionDigits:d});
+const usd=(n:number)=>n.toLocaleString("pt-PT",{maximumFractionDigits:0});
+const years=[2022,2023,2024,2025];
+
+export default function AnalyticsExpansion(){
+ const[flow,setFlow]=useState("GBL"),[section,setSection]=useState(0);
+ const rows=useMemo(()=>scenarios.map(s=>({s,values:years.map(y=>dataset.scenarios.find(r=>r.flow===flow&&r.year===y&&r.scenario===s&&r.section===(section||undefined))?.index??null)})),[flow,section]);
+ const annual=years.map(y=>{const ms=dataset.balance.filter(r=>r.year===y);return{year:y,exports:ms.reduce((a,r)=>a+r.exports,0),imports:ms.reduce((a,r)=>a+r.imports,0),balance:ms.reduce((a,r)=>a+r.balance,0)}});
+ const vals=rows.flatMap(r=>r.values).filter((v):v is number=>v!=null&&v>0),maxLog=Math.log10(Math.max(...vals,100)),minLog=Math.log10(Math.min(...vals,25));
+ const x=(i:number)=>55+i*195,y=(v:number)=>210-(Math.log10(Math.max(v,1))-minLog)/(maxLog-minLog||1)*155;
+ return <>
+ <section className="scenario-section"><div className="scenario-head"><div><span>ANÁLISE DE SENSIBILIDADE</span><h2>Cinco cenários do índice</h2><p>Compare o índice sem tratamento com limites superiores de 400, 300, 200 e 100. A escala logarítmica permite visualizar simultaneamente os valores brutos extremos e as séries controladas.</p></div><div className="scenario-selects"><label>Fluxo<select value={flow} onChange={e=>setFlow(e.target.value)}><option value="GBL">Índice Global</option><option value="EXP">Exportações</option><option value="IMP">Importações</option></select></label><label>Grupo<select value={section} onChange={e=>setSection(+e.target.value)}><option value="0">Índice geral</option>{Array.from({length:21},(_,i)=><option value={i+1} key={i}>{i+1} — Secção SH</option>)}</select></label></div></div>
+ <div className="scenario-card"><div className="scenario-legend">{rows.map(r=><span key={r.s}><i style={{background:colors[r.s]}}/>{names[r.s]}</span>)}</div><svg viewBox="0 0 700 260" aria-label="Comparação dos cenários do índice">{[0,1,2,3].map(i=><line key={i} x1="55" x2="640" y1={55+i*52} y2={55+i*52} className="s-grid"/>)}{rows.map(r=><g key={r.s}><path d={r.values.map((v,i)=>v==null?"":`${i?"L":"M"}${x(i)},${y(v)}`).join(" ")} fill="none" stroke={colors[r.s]} strokeWidth={r.s==="300"?4:2.5}/>{r.values.map((v,i)=>v==null?null:<circle key={i} cx={x(i)} cy={y(v)} r="4" fill="#fff" stroke={colors[r.s]} strokeWidth="2"/>)}</g>)}{years.map((yr,i)=><text key={yr} x={x(i)} y="245" className="s-axis">{yr}</text>)}</svg><div className="scenario-table"><table><thead><tr><th>Cenário</th>{years.map(y=><th key={y}>{y}</th>)}</tr></thead><tbody>{rows.map(r=><tr key={r.s}><td><i style={{background:colors[r.s]}}/>{names[r.s]}</td>{r.values.map((v,i)=><td key={i}>{fmt(v)}</td>)}</tr>)}</tbody></table></div><p className="technical-note"><b>Leitura:</b> o cenário bruto é diagnóstico e evidencia a dimensão dos outliers. O limite 300 permanece como cenário recomendado para publicação, sujeito à validação institucional.</p></div></section>
+ <section className="balance-section"><div className="balance-head"><span>BALANÇA COMERCIAL · MIL USD</span><h2>Exportações menos Importações</h2><p>Valores reais agregados a partir dos mesmos registos utilizados no cálculo dos índices.</p></div><div className="balance-grid"><div className="balance-bars">{annual.map(r=>{const scale=Math.max(...annual.map(v=>v.imports));return <article key={r.year}><b>{r.year}</b><div><span className="exp" style={{width:`${r.exports/scale*100}%`}}>Exp. {usd(r.exports)}</span><span className="imp" style={{width:`${r.imports/scale*100}%`}}>Imp. {usd(r.imports)}</span></div><strong>{r.balance<0?"Défice":"Superavit"}: {usd(Math.abs(r.balance))}</strong></article>})}</div><div className="balance-table"><table><thead><tr><th>Ano</th><th>Exportações</th><th>Importações</th><th>Saldo</th></tr></thead><tbody>{annual.map(r=><tr key={r.year}><td>{r.year}</td><td>{usd(r.exports)}</td><td>{usd(r.imports)}</td><td className={r.balance<0?"negative":"positive"}>{usd(r.balance)}</td></tr>)}</tbody></table><small>Unidade: mil USD. Saldo = Exportações − Importações.</small></div></div></section>
+ </>
+}

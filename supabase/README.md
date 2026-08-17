@@ -1,0 +1,1 @@
+O ficheiro schema.sql contém a estrutura aplicada ao projecto ice-mz (ref: strffffxecbnwkeqgttd). Todas as tabelas expostas usam Row Level Security. O bucket ice-source-files é privado. Nunca guardar chaves service_role neste repositório.
