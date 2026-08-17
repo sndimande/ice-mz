@@ -19,7 +19,7 @@ export async function POST(request:Request){
    headers:{apikey:publishableKey,Authorization:`Bearer ${session.access_token}`},cache:"no-store"
   });
   const profiles=await profileRes.json().catch(()=>[]);
-  if(!profileRes.ok||!profiles[0])return NextResponse.json({message:"Conta autenticada, mas sem perfil ICE-MZ activo."},{status:403});
+  if(!profileRes.ok||!profiles[0]?.active)return NextResponse.json({message:"Conta autenticada, mas sem perfil ICE-MZ activo."},{status:403});
   return NextResponse.json({token:session.access_token,user:session.user,profile:profiles[0]},{headers:{"Cache-Control":"no-store"}});
  }catch{
   return NextResponse.json({message:"Não foi possível contactar o serviço de autenticação."},{status:500});
