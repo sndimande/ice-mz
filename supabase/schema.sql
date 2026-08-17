@@ -101,3 +101,21 @@ values ('ice-source-files','ice-source-files',false,524288000,array['text/csv','
 on conflict (id) do nothing;
 create policy "managers upload source files" on storage.objects for insert to authenticated with check (bucket_id='ice-source-files' and exists (select 1 from public.profiles p where p.user_id=(select auth.uid()) and p.active and p.role in ('admin','data_manager')));
 create policy "staff read source files" on storage.objects for select to authenticated using (bucket_id='ice-source-files' and exists (select 1 from public.profiles p where p.user_id=(select auth.uid()) and p.active));
+
+-- Cria automaticamente o perfil e reserva o primeiro administrador autorizado.
+create schema if not exists private;
+create or replace function private.handle_new_ice_user()
+returns trigger language plpgsql security definer set search_path = '' as $$
+begin
+  insert into public.profiles (user_id, full_name, role, active)
+  values (new.id,
+    coalesce(new.raw_user_meta_data ->> 'full_name', split_part(new.email, '@', 1)),
+    case when lower(new.email) = 'sergiom.ndimande@gmail.com' then 'admin'::public.app_role else 'viewer'::public.app_role end,
+    true)
+  on conflict (user_id) do nothing;
+  return new;
+end;
+$$;
+revoke all on function private.handle_new_ice_user() from public, anon, authenticated;
+create trigger on_auth_user_created_ice after insert on auth.users
+for each row execute function private.handle_new_ice_user();
