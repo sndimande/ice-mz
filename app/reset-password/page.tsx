@@ -4,7 +4,7 @@ import Link from "next/link";
 import styles from "./reset.module.css";
 
 const supabaseUrl="https://strffffxecbnwkeqgttd.supabase.co";
-const publishableKey=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY||"sb_publishable_J0oSYK9JSvBWI-54AY0_uA_YD-3AcOq";
+const publishableKey="sb_publishable_J0oSYK9JSvBWI-54AY0_uA_YD-3AcOq";
 
 export default function ResetPassword(){
  const[token,setToken]=useState(""),[password,setPassword]=useState(""),[confirm,setConfirm]=useState(""),[message,setMessage]=useState(""),[done,setDone]=useState(false),[busy,setBusy]=useState(false);
