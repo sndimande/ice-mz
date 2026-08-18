@@ -5,7 +5,7 @@ type AuthState={token:string;user:{id:string;email?:string};profile:Profile}|nul
 type DatasetRow={id:number;flow:string;reference_year:number;file_name:string;status:string;row_count:number|null;created_at:string};
 type UserProfileRow={user_id:string;full_name:string|null;username:string|null;role:Profile["role"];active:boolean;created_at:string};
 const supabaseUrl="https://strffffxecbnwkeqgttd.supabase.co";
-const publishableKey=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY||"sb_publishable_J0oSYK9JSvBWI-54AY0_uA_YD-3AcOq";
+const publishableKey="sb_publishable_J0oSYK9JSvBWI-54AY0_uA_YD-3AcOq";
 const authHeaders=()=>({apikey:publishableKey});
 const headers=(token:string)=>({apikey:publishableKey,Authorization:`Bearer ${token}`});
 const readResponse=async(res:Response)=>{const text=await res.text();try{return JSON.parse(text)}catch{throw new Error(`O serviço de autenticação respondeu em formato inesperado (${res.status}). Verifique a Publishable Key no Vercel.`)}};
