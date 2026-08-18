@@ -4,7 +4,7 @@ import Link from "next/link";
 import styles from "../../entrar/entrar.module.css";
 
 const supabaseUrl="https://strffffxecbnwkeqgttd.supabase.co";
-const publishableKey=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY||"sb_publishable_J0oSYK9JSvBWI-54AY0_uA_YD-3AcOq";
+const publishableKey="sb_publishable_J0oSYK9JSvBWI-54AY0_uA_YD-3AcOq";
 
 export default function AuthCallback(){
  const[message,setMessage]=useState("A confirmar o link seguro…"),[ok,setOk]=useState(false);
