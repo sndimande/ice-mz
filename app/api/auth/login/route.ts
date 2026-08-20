@@ -7,7 +7,7 @@ export async function POST(request:Request){
  try{
   const input=await request.json();
   const email=String(input.email||"").trim().toLowerCase();
-  const password=String(input.password||"").normalize("NFKC").replace(/[\u200B-\u200D\uFEFF\s]/g,"").toLowerCase();
+  const password=String(input.password||"").normalize("NFKC").replace(/[\u200B-\u200D\uFEFF]/g,"");
   if(!email||!password)return NextResponse.json({message:"Preencha o e-mail e a palavra-passe."},{status:400});
   const authRes=await fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`,{
    method:"POST",headers:{apikey:publishableKey,"Content-Type":"application/json"},
